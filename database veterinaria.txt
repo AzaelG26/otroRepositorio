@@ -1,0 +1,84 @@
+create database veterinaria
+ 
+create table clientes(
+id_dueño varchar(50) primary key,
+nombre varchar(50) not null,
+contacto char(10) not null,
+domicilio nvarchar (100)
+);
+
+create table Mascotas(
+id_mascota varchar(50) primary key,
+nombre varchar(50) not null,
+especie char (20) not null,
+edad char (10) not null,
+motivo_cita nvarchar (100), 
+dueño varchar(50), foreign key (dueño) references Dueños (id_dueño)
+);
+
+create table Empleados(
+id_empleado varchar(50) primary key,
+nombre varchar(50) not null,
+tipo_empleado char(20) not null
+); 
+
+ALTER TABLE Empleados
+ADD CONSTRAINT CK_tipo_empleado
+CHECK (tipo_empleado= 'RECEPCIONISTA' OR tipo_empleado= 'MEDICO' OR tipo_empleado= 'ESTILISTA' OR tipo_empleado= 'CUIDADOR' OR tipo_empleado= 'PERSONAL DE LIMPIEZA');
+
+
+CREATE table Categorias(
+id_categorias varchar(20) primary key,
+nombre varchar(50) not null
+);
+
+create table Productos(
+id_producto varchar (50) primary key,
+nombre char(30) not null,
+precio decimal(10,2) not null,
+stock int  not null,
+categoria varchar(20), foreign key (categoria) references Categorias(id_categorias)
+);
+
+create table Tipo_servicio(
+id_ts varchar(50) primary key,
+nombre varchar(50) not null
+);
+
+create table Servicios(
+id_servicio varchar(50) primary key,
+nombre varchar (50) not null,
+costo decimal(10,2) not null,
+descripcion nvarchar(100) null,
+tipo_servicio varchar(50),foreign key (tipo_servicio) references Tipo_servicio (id_ts)
+);
+
+create table Citas(
+    id_citas varchar(50) primary key,
+    nombre varchar(50) not null,
+    fecha date not null,
+    servicio_requerido varchar(50), 
+    foreign key (servicio_requerido) references Servicios (id_servicio),
+    paciente varchar(50), 
+    foreign key (paciente) references Paciente (id_paciente)
+);
+
+
+CREATE TABLE Orden_Venta (
+id_orden VARCHAR(50) PRIMARY KEY,
+fecha DATE NOT NULL,
+cliente VARCHAR(50),
+cita varchar(50),
+foreign key (cliente) references clientes(id_dueño),
+foreign key(cita) references citas(id_citas)
+);
+
+CREATE TABLE Detalle_Venta (
+id_detalle VARCHAR(50) PRIMARY KEY,
+orden VARCHAR(50) NOT NULL,
+elemento VARCHAR(50) NOT NULL,
+cantidad INT, -- solo para productos
+FOREIGN KEY (elemento) REFERENCES Productos(id_producto),
+FOREIGN KEY (elemento) REFERENCES Servicios(id_servicio),
+FOREIGN KEY (orden) REFERENCES Orden_Venta(id_orden)
+);
